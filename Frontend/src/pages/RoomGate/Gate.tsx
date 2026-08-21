@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { createRoom } from '../../service/room.service'
 // import { FiCopy, FiEdit2, FiMoreVertical, FiPlus, FiTrash2 } from 'react-icons/fi'
 import MenuDropdown from '../../components/ui/UserMenu'
-import { Copy, Pencil, Trash2 } from 'lucide-react'
+import { Copy } from 'lucide-react'
 import { FiPlus } from 'react-icons/fi'
 
 

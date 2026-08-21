@@ -1,9 +1,20 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+
+interface Slide {
+    image: string;
+    title: string;
+    description: string;
+}
+
+interface HeroSliderProps {
+    slides?: Slide[];
+    imageShape?: "circle" | "square";
+}
 
 const HeroSlider = ({
     slides = [],
-    imageShape = "circle", // "circle" | "square"
-}) => {
+    imageShape = "circle",
+}: HeroSliderProps) => {
 
     const [current, setCurrent] = useState(0);
 
