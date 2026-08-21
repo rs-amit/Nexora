@@ -1,0 +1,149 @@
+services:
+  - type: web
+    name: sketchboard-api-gateway
+    runtime: node
+    rootDir: Backend/api-getway
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: JWT_ACCESS_SECRET
+        sync: false
+      - key: AUTH_SERVICE
+        sync: false
+      - key: ROOM_SERVICE
+        sync: false
+      - key: CHAT_SERVICE
+        sync: false
+      - key: SKETCH_SERVICE
+        sync: false
+      - key: WORKSPACE_SERVICE
+        sync: false
+
+  - type: web
+    name: sketchboard-auth-service
+    runtime: node
+    rootDir: Backend/auth-service-v1
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_ACCESS_SECRET
+        sync: false
+      - key: JWT_REFRESH_SECRET
+        sync: false
+      - key: ACCESS_TOKEN_EXPIRY
+        value: 15m
+      - key: REFRESH_TOKEN_EXPIRY
+        value: 7d
+      - key: AUTH_SERVICE
+        sync: false
+      - key: ROOM_SERVICE
+        sync: false
+      - key: CHAT_SERVICE
+        sync: false
+      - key: SKETCH_SERVICE
+        sync: false
+      - key: WORKSPACE_SERVICE
+        sync: false
+
+  - type: web
+    name: sketchboard-room-service
+    runtime: node
+    rootDir: Backend/room-service
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_ACCESS_SECRET
+        sync: false
+      - key: JWT_REFRESH_SECRET
+        sync: false
+      - key: ACCESS_TOKEN_EXPIRY
+        value: 15m
+      - key: REFRESH_TOKEN_EXPIRY
+        value: 7d
+      - key: AUTH_SERVICE
+        sync: false
+      - key: ROOM_SERVICE
+        sync: false
+      - key: CHAT_SERVICE
+        sync: false
+      - key: SKETCH_SERVICE
+        sync: false
+      - key: WORKSPACE_SERVICE
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
+
+  # NOTE: keep this service off the public internet if your Render plan
+  # supports private services — it trusts an `x-user-id` header with no
+  # signature verification of its own (see Backend/workspace-service's
+  # auth.middleware.js). It should only ever be called by the other
+  # services here, never hit directly from a browser.
+  - type: web
+    name: sketchboard-workspace-service
+    runtime: node
+    rootDir: Backend/workspace-service
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: MONGO_URI
+        sync: false
+      - key: AUTH_SERVICE
+        sync: false
+      - key: ROOM_SERVICE
+        sync: false
+      - key: CHAT_SERVICE
+        sync: false
+      - key: SKETCH_SERVICE
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+
+  # Frontend connects directly to this service's socket.io endpoint
+  # (bypasses the gateway) — needs a public URL.
+  - type: web
+    name: sketchboard-chat-service
+    runtime: node
+    rootDir: Backend/chat-service
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_ACCESS_SECRET
+        sync: false
+      - key: WORKSPACE_SERVICE
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
+
+  # Frontend connects directly to this service's socket.io endpoint
+  # (bypasses the gateway) — needs a public URL.
+  - type: web
+    name: sketchboard-sketch-service
+    runtime: node
+    rootDir: Backend/sketch-service
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: MONGO_URI
+        sync: false
+      - key: JWT_ACCESS_SECRET
+        sync: false
+      - key: WORKSPACE_SERVICE
+        sync: false
+      - key: FRONTEND_URL
+        sync: false
