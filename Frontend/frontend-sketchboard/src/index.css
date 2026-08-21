@@ -1,0 +1,39 @@
+@import "@fontsource/inter";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --border-color: rgba(255, 255, 255, 0.07);
+}
+
+*,
+*::before,
+*::after {
+  border-color: var(--border-color);
+}
+
+body {
+  margin: 0;
+  background-color: #171717;
+  color: #ffffff;
+  font-family: "Inter", sans-serif;
+  font-size: 12px;
+}
+
+/*
+Chrome/Edge/Safari force a light autofill background + dark text via UA
+styles that plain background-color can't override. The inset box-shadow
+paints over it with the app's dark background, and the huge transition
+delay stops the light color from flashing before that shadow applies.
+*/
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #171717 inset;
+  -webkit-text-fill-color: #ffffff;
+  caret-color: #ffffff;
+  transition: background-color 600000s ease-in-out 0s;
+}

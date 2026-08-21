@@ -1,0 +1,19 @@
+# Root-level safety net — each subproject also has its own .gitignore, but
+# this catches anything, anywhere in the repo, regardless of subfolder.
+
+node_modules/
+dist/
+dist-ssr/
+
+# Env files — real values belong in each hosting platform's dashboard
+.env
+.env.*
+!.env.example
+
+# OS/editor junk
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/
+*.log
