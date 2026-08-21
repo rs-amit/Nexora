@@ -1,7 +1,7 @@
 import { Room } from "../models/room.model.js";
 import axios from "axios";
 import crypto from "crypto";
-import { sendEmail } from "../utils/sendEmail.js";
+import { sendEmail } from "../Utils/sendEmail.js";
 import { ApiError } from "../Utils/apiError.js";
 
 const generateInviteCode = () => {
