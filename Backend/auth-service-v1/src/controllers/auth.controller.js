@@ -141,11 +141,22 @@ export const findUserByEmail = async (req, res) => {
 
 export const validateUsers = async (req, res) => {
 
-  const result = await validateUsersService(req.body)
+  try {
 
-  return res.status(200).json({
-    success: true,
-    ...result
-  })
+    const result = await validateUsersService(req.body)
+
+    return res.status(200).json({
+      success: true,
+      ...result
+    })
+
+  } catch (error) {
+
+    res.status(error.statusCode || 400).json({
+      success: false,
+      message: error.message
+    })
+
+  }
 
 }
