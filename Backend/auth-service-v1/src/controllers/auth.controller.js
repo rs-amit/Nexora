@@ -8,68 +8,99 @@ import {
 
 export const signup = async (req, res) => {
 
-  const result = await signupUser(req.body)
+  try {
 
-  res.cookie("refreshToken", result.refreshToken, {
-    httpOnly: true,
-    secure: false,
-    sameSite: "strict",
-    maxAge: 7 * 24 * 60 * 60 * 1000
-  })
+    const result = await signupUser(req.body)
 
-  res.status(201).json({
-    user: result.user,
-    accessToken: result.accessToken
-  })
+    res.cookie("refreshToken", result.refreshToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    })
+
+    res.status(201).json({
+      user: result.user,
+      accessToken: result.accessToken
+    })
+
+  } catch (error) {
+
+    res.status(error.statusCode || 400).json({
+      success: false,
+      message: error.message
+    })
+
+  }
 
 }
 
 export const login = async (req, res) => {
 
-  const result = await loginUser(req.body)
+  try {
 
-  res.cookie("refreshToken", result.refreshToken, {
-    httpOnly: true,
-    secure: false,
-    sameSite: "strict",
-    maxAge: 7 * 24 * 60 * 60 * 1000
-  })
+    const result = await loginUser(req.body)
 
+    res.cookie("refreshToken", result.refreshToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    })
 
+    res.json({
+      user: result.user,
+      accessToken: result.accessToken
+    })
 
-  res.json({
-    user: result.user,
-    accessToken: result.accessToken
-  })
+  } catch (error) {
+
+    res.status(error.statusCode || 401).json({
+      success: false,
+      message: error.message
+    })
+
+  }
 
 }
 
 export const refreshToken = async (req, res) => {
 
-  const token = req.cookies.refreshToken
+  try {
 
-  if (!token) {
-    return res.status(401).json({
-      message: "Refresh token missing"
+    const token = req.cookies.refreshToken
+
+    if (!token) {
+      return res.status(401).json({
+        message: "Refresh token missing"
+      })
+    }
+
+    const result = await refreshUserToken(token)
+
+    /*
+    Rotate refresh token
+    */
+
+    res.cookie("refreshToken", result.refreshToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000
     })
+
+    return res.json({
+      accessToken: result.accessToken
+    })
+
+  } catch (error) {
+
+    res.status(error.statusCode || 401).json({
+      success: false,
+      message: error.message
+    })
+
   }
-
-  const result = await refreshUserToken(token)
-
-  /*
-  Rotate refresh token
-  */
-
-  res.cookie("refreshToken", result.refreshToken, {
-    httpOnly: true,
-    secure: false,
-    sameSite: "strict",
-    maxAge: 7 * 24 * 60 * 60 * 1000
-  })
-
-  return res.json({
-    accessToken: result.accessToken
-  })
 
 }
 
