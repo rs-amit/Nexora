@@ -18,7 +18,7 @@ import type { InviteMemberPayload } from "./component/InviteMemberModal";
 import InviteMemberModal from "./component/InviteMemberModal";
 import { getCurrentUser } from "../../lib/currentUser";
 
-const TABS = ["Overview", "Rooms", "Members", "Settings"] as const;
+const TABS = ["Overview", "Rooms", "Members"] as const;
 type Tab = (typeof TABS)[number];
 
 function Workspace() {
@@ -92,6 +92,65 @@ function Workspace() {
             </div>
         );
     }
+
+    const roomsSection = (
+        <div className="mt-8">
+            <div className="mb-4 flex items-center justify-between">
+                <div>
+                    <h2 className="text-[16px] font-semibold">Rooms</h2>
+                    <p className="text-sm text-white/50">
+                        Create or join a room to start collaborating.
+                    </p>
+                </div>
+
+                <Button
+                    type="button"
+                    leftIcon={<FilePlusCorner size={15} />}
+                    onClick={() => setIsCreateModalOpen(true)}
+                    className="!text-[12px]"
+                >
+                    New Room
+                </Button>
+            </div>
+
+            {roomsError && (
+                <p className="mb-4 text-sm text-red-400">{roomsError}</p>
+            )}
+
+            {roomsLoading ? (
+                <p className="text-white/50">Loading rooms...</p>
+            ) : (
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    {rooms.map((room) => (
+                        <RoomCard
+                            key={room._id}
+                            room={room}
+                            onClick={() => navigate(`/room/${room._id}`)}
+                        />
+                    ))}
+
+                    <button
+                        type="button"
+                        onClick={() => setIsCreateModalOpen(true)}
+                        className="
+                            flex min-h-[140px] flex-col items-center
+                            justify-center gap-2 rounded-xl border
+                            border-dashed text-white/50 transition
+                            hover:border-white/25 hover:text-white
+                        "
+                    >
+                        <span className="flex h-9 w-9 items-center justify-center rounded-full border text-lg">
+                            +
+                        </span>
+                        <span className="text-sm font-medium">Create New Room</span>
+                        <span className="text-xs text-white/40">
+                            Start a new discussion or canvas
+                        </span>
+                    </button>
+                </div>
+            )}
+        </div>
+    );
 
     return (
         <div className="mx-auto w-full max-w-[1200px] p-6 text-white">
@@ -183,70 +242,12 @@ function Workspace() {
                         </div>
                     </div>
 
-                    {/* Rooms */}
-                    <div className="mt-8">
-                        <div className="mb-4 flex items-center justify-between">
-                            <div>
-                                <h2 className="text-[16px] font-semibold">Rooms</h2>
-                                <p className="text-sm text-white/50">
-                                    Create or join a room to start collaborating.
-                                </p>
-                            </div>
-
-                            <Button
-                                type="button"
-                                leftIcon={<FilePlusCorner size={15} />}
-                                onClick={() => setIsCreateModalOpen(true)}
-                                className="!text-[12px]"
-                            >
-                                New Room
-                            </Button>
-                        </div>
-
-                        {roomsError && (
-                            <p className="mb-4 text-sm text-red-400">{roomsError}</p>
-                        )}
-
-                        {roomsLoading ? (
-                            <p className="text-white/50">Loading rooms...</p>
-                        ) : (
-                            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-                                {rooms.map((room) => (
-                                    <RoomCard
-                                        key={room._id}
-                                        room={room}
-                                        onClick={() => navigate(`/room/${room._id}`)}
-                                    />
-                                ))}
-
-                                <button
-                                    type="button"
-                                    onClick={() => setIsCreateModalOpen(true)}
-                                    className="
-                                        flex min-h-[140px] flex-col items-center
-                                        justify-center gap-2 rounded-xl border
-                                        border-dashed text-white/50 transition
-                                        hover:border-white/25 hover:text-white
-                                    "
-                                >
-                                    <span className="flex h-9 w-9 items-center justify-center rounded-full border text-lg">
-                                        +
-                                    </span>
-                                    <span className="text-sm font-medium">Create New Room</span>
-                                    <span className="text-xs text-white/40">
-                                        Start a new discussion or canvas
-                                    </span>
-                                </button>
-                            </div>
-                        )}
-                    </div>
+                    {roomsSection}
                 </div>
-            ) : activeTab === "Members" ? (
-                <MembersTab workspaceId={workspaceId as string} />
+            ) : activeTab === "Rooms" ? (
+                roomsSection
             ) : (
-                <div className="mt-10 text-center text-white/40">
-                    {activeTab} coming soon.
-                </div>
+                <MembersTab workspaceId={workspaceId as string} />
             )}
 
             <CreateRoomModal
