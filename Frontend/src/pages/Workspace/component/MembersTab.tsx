@@ -86,6 +86,7 @@ function MembersTab({ workspaceId }: MembersTabProps) {
                 isOpen={isInviteOpen}
                 onClose={() => setIsInviteOpen(false)}
                 onInvite={handleInvite}
+                existingMemberIds={members.map((member) => member.userId)}
             />
         </div>
     );

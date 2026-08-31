@@ -129,6 +129,37 @@ export const findUserByEmailService = async ({ email }) => {
 }
 
 
+const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
+
+export const searchUsersService = async ({ query, excludeUserId }) => {
+
+  const trimmed = (query || "").trim()
+
+  if (trimmed.length < 2) {
+    const error = new Error("Search query must be at least 2 characters")
+    error.statusCode = 400
+    throw error
+  }
+
+  const pattern = new RegExp(escapeRegex(trimmed), "i")
+
+  const filter = {
+    $or: [{ name: pattern }, { email: pattern }]
+  }
+
+  if (excludeUserId && mongoose.Types.ObjectId.isValid(excludeUserId)) {
+    filter._id = { $ne: excludeUserId }
+  }
+
+  const users = await User.find(filter, "_id name email")
+    .limit(8)
+    .lean()
+
+  return users
+
+}
+
+
 export const validateUsersService = async ({ userIds }) => {
 
 

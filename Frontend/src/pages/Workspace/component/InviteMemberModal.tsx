@@ -1,8 +1,9 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { X } from "lucide-react";
-import Input from "../../../components/ui/CustomInput";
+import UserSearchInput from "../../../components/ui/UserSearchInput";
 import Button from "../../../components/ui/Button/CustomButton";
 import type { InvitableRole } from "../../../types/workspace.types";
+import type { SearchedUser } from "../../../service/auth.service";
 
 export interface InviteMemberPayload {
     email: string;
@@ -13,30 +14,28 @@ export interface InviteMemberModalProps {
     isOpen: boolean;
     onClose: () => void;
     onInvite: (payload: InviteMemberPayload) => Promise<void>;
+    /** userIds already in the workspace — hidden from search results */
+    existingMemberIds?: string[];
 }
 
-function InviteMemberModal({ isOpen, onClose, onInvite }: InviteMemberModalProps) {
-    const [email, setEmail] = useState("");
+function InviteMemberModal({
+    isOpen,
+    onClose,
+    onInvite,
+    existingMemberIds = [],
+}: InviteMemberModalProps) {
+    const [query, setQuery] = useState("");
+    const [selectedUser, setSelectedUser] = useState<SearchedUser | null>(null);
     const [role, setRole] = useState<InvitableRole>("EDITOR");
-    const [emailError, setEmailError] = useState<string | null>(null);
     const [submitError, setSubmitError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const emailInputRef = useRef<HTMLInputElement>(null);
-
     const resetForm = () => {
-        setEmail("");
+        setQuery("");
+        setSelectedUser(null);
         setRole("EDITOR");
-        setEmailError(null);
         setSubmitError(null);
     };
-
-    useEffect(() => {
-        if (!isOpen) return;
-
-        const timer = setTimeout(() => emailInputRef.current?.focus(), 0);
-        return () => clearTimeout(timer);
-    }, [isOpen]);
 
     useEffect(() => {
         if (!isOpen) return;
@@ -78,20 +77,13 @@ function InviteMemberModal({ isOpen, onClose, onInvite }: InviteMemberModalProps
     const handleSubmit = async (event: FormEvent) => {
         event.preventDefault();
 
-        const trimmedEmail = email.trim();
+        if (!selectedUser) return;
 
-        if (!trimmedEmail) {
-            setEmailError("Email is required");
-            emailInputRef.current?.focus();
-            return;
-        }
-
-        setEmailError(null);
         setSubmitError(null);
         setIsSubmitting(true);
 
         try {
-            await onInvite({ email: trimmedEmail, role });
+            await onInvite({ email: selectedUser.email, role });
 
             resetForm();
         } catch (error) {
@@ -137,18 +129,16 @@ function InviteMemberModal({ isOpen, onClose, onInvite }: InviteMemberModalProps
                 {/* Form */}
                 <form onSubmit={handleSubmit} noValidate>
                     <div className="space-y-4">
-                        <Input
-                            ref={emailInputRef}
-                            type="email"
-                            label="Email"
+                        <UserSearchInput
+                            label="Invite by name or email"
                             placeholder="teammate@company.com"
-                            value={email}
+                            value={query}
+                            onQueryChange={setQuery}
+                            selectedUser={selectedUser}
+                            onSelect={setSelectedUser}
+                            onClear={() => setSelectedUser(null)}
+                            excludeUserIds={existingMemberIds}
                             disabled={isSubmitting}
-                            error={emailError ?? undefined}
-                            onChange={(event) => {
-                                setEmail(event.target.value);
-                                if (emailError) setEmailError(null);
-                            }}
                         />
 
                         <div className="w-full">
@@ -198,7 +188,13 @@ function InviteMemberModal({ isOpen, onClose, onInvite }: InviteMemberModalProps
                             Cancel
                         </Button>
 
-                        <Button type="submit" fullWidth variant="primary" loading={isSubmitting}>
+                        <Button
+                            type="submit"
+                            fullWidth
+                            variant="primary"
+                            loading={isSubmitting}
+                            disabled={!selectedUser}
+                        >
                             Send Invite
                         </Button>
                     </div>

@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 import Header from "./components/RoomHeader";
 import RoomFooter from "./components/RoomFooter";
 import RoomMembersModal from "./components/RoomMembersModal";
+import RoomInvitePanel from "./components/RoomInvitePanel";
 
 import CanvasBoard from "./canva/CanvasBoard";
 import ChatDock from "./components/ChatDock";
@@ -38,6 +39,7 @@ function Room() {
   const { members: workspaceMembers } = useWorkspaceMembers(room?.workspaceId);
 
   const [isMembersModalOpen, setIsMembersModalOpen] = useState(false);
+  const [isInviteOpen, setIsInviteOpen] = useState(false);
 
   const currentUser = getCurrentUser();
   const currentMembership = members.find(
@@ -58,6 +60,7 @@ function Room() {
           onManageMembers={
             canManageMembers ? () => setIsMembersModalOpen(true) : undefined
           }
+          onShareClick={() => setIsInviteOpen(true)}
         />
       </div>
 
@@ -73,6 +76,15 @@ function Room() {
           onRemove={removeMember}
         />
       )}
+
+      <RoomInvitePanel
+        isOpen={isInviteOpen}
+        onClose={() => setIsInviteOpen(false)}
+        workspaceId={room?.workspaceId}
+        roomMembers={members}
+        workspaceMembers={workspaceMembers}
+        onAddRoomMember={addMember}
+      />
 
       {/* Canvas */}
       {roomId && (

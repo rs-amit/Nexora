@@ -14,21 +14,10 @@ export interface HeaderProps {
   roomName: string;
   loading?: boolean;
   onManageMembers?: () => void;
+  onShareClick?: () => void;
 }
 
-function Header({ roomName, loading = false, onManageMembers }: HeaderProps) {
-  // const handleCopyRoomLink = async () => {
-  //   try {
-  //     await navigator.clipboard.writeText(
-  //       window.location.href
-  //     );
-
-  //     alert("Room link copied");
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // };
-
+function Header({ roomName, loading = false, onManageMembers, onShareClick }: HeaderProps) {
   return (
     <div
       className="
@@ -95,14 +84,7 @@ function Header({ roomName, loading = false, onManageMembers }: HeaderProps) {
           </button>
         )}
 
-        <ShareButton
-          onShare={() => {
-            navigator.clipboard.writeText(
-              window.location.href
-            );
-            alert("Link copied");
-          }}
-        />
+        <ShareButton onShare={onShareClick} />
 
         <MenuDropdown
           triggerIcon={<CgMenuRight size={16} />}

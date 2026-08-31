@@ -55,4 +55,20 @@ router.post(
   })
 )
 
+router.get(
+  "/search-users",
+  authenticate,
+  asyncHandler(async (req, res) => {
+
+    const response = await forwardRequest(req, services.authService)
+
+    Object.entries(response.headers || {}).forEach(([key, value]) => {
+      res.setHeader(key, value)
+    })
+
+    res.status(response.status).send(response.data)
+
+  })
+)
+
 export default router

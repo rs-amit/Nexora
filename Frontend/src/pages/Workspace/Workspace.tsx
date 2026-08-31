@@ -259,6 +259,7 @@ function Workspace() {
                 isOpen={isInviteOpen}
                 onClose={() => setIsInviteOpen(false)}
                 onInvite={handleInvite}
+                existingMemberIds={members.map((member) => member.userId)}
             />
         </div>
     );

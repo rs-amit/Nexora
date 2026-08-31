@@ -38,3 +38,22 @@ export const validateUsers = async (
 
   return response.data;
 };
+
+export interface SearchedUser {
+  _id: string;
+  name: string;
+  email: string;
+}
+
+export interface SearchUsersResponse {
+  success: boolean;
+  users: SearchedUser[];
+}
+
+export const searchUsers = async (query: string): Promise<SearchedUser[]> => {
+  const response = await api.get<SearchUsersResponse>("/auth/search-users", {
+    params: { q: query },
+  });
+
+  return response.data.users;
+};

@@ -3,7 +3,8 @@ import {
   loginUser,
   refreshUserToken,
   validateUsersService,
-  findUserByEmailService
+  findUserByEmailService,
+  searchUsersService
 } from "../services/auth.service.js"
 
 export const signup = async (req, res) => {
@@ -130,6 +131,34 @@ export const findUserByEmail = async (req, res) => {
   } catch (error) {
 
     return res.status(error.statusCode || 500).json({
+      success: false,
+      message: error.message
+    })
+
+  }
+
+}
+
+
+export const searchUsers = async (req, res) => {
+
+  try {
+
+    const excludeUserId = req.headers["x-user-id"]
+
+    const users = await searchUsersService({
+      query: req.query.q,
+      excludeUserId
+    })
+
+    return res.status(200).json({
+      success: true,
+      users
+    })
+
+  } catch (error) {
+
+    res.status(error.statusCode || 400).json({
       success: false,
       message: error.message
     })
