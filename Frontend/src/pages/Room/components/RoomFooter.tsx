@@ -1,9 +1,7 @@
 import { useState } from "react";
 
 import { BsChatSquare } from "react-icons/bs";
-import { LuVideo } from "react-icons/lu";
 import { MdPeopleOutline } from "react-icons/md";
-import { TiMicrophoneOutline } from "react-icons/ti";
 
 import { useChat } from "../../../context/ChatContext";
 import { getCurrentUser } from "../../../lib/currentUser";
@@ -21,14 +19,6 @@ function RoomFooter({ members }: RoomFooterProps) {
   const currentUser = getCurrentUser();
 
   const items = [
-    {
-      label: "Mic",
-      icon: <TiMicrophoneOutline size={16} />,
-    },
-    {
-      label: "Camera",
-      icon: <LuVideo size={16} />,
-    },
     {
       label: "Chat",
       icon: <BsChatSquare size={16} />,
