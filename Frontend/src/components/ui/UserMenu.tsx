@@ -322,6 +322,7 @@ function MenuDropdown({
                     ${
                       item.danger
                         ? `
+                          bg-[#171925]
                           text-red-500
                           hover:bg-red-500/10
                         `
