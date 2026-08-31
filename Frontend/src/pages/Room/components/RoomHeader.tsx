@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 import logo from "../../../assets/logo.png";
 
 import Input from "../../../components/ui/CustomInput";
@@ -34,16 +36,16 @@ function Header({ roomName, loading = false, onManageMembers, onShareClick }: He
 
         {/* Logo */}
 
-        <div className="flex items-center gap-2" >
+        <Link to="/dashboard" className="flex items-center gap-2">
           <img
             src={logo}
             alt="logo"
             className="max-w-[30px] object-contain"
           />
 
-          <span>Nexora</span>
+          <span className="text-[15px]">Nexora</span>
 
-        </div>
+        </Link>
 
         <span className="text-[22px]">/</span>
 
