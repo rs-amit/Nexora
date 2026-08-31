@@ -1,6 +1,9 @@
 import { isValidElement, type ReactElement } from 'react';
 import { Outlet } from 'react-router-dom';
+import { LogOut } from 'lucide-react';
 import Header, { type HeaderProps } from './Header';
+import { getCurrentUser } from '../../lib/currentUser';
+import { logout } from '../../service/auth.service';
 
 export interface DashboardLayoutProps {
   header?: HeaderProps | ReactElement;
@@ -15,6 +18,17 @@ export default function DashboardLayout({
   contentClassName = '',
   className = '',
 }: DashboardLayoutProps) {
+  const currentUser = getCurrentUser();
+
+  const defaultHeaderProps: HeaderProps = {
+    user: currentUser
+      ? { name: currentUser.name, initials: currentUser.name?.[0]?.toUpperCase() }
+      : undefined,
+    userMenuItems: [
+      { label: 'Logout', icon: <LogOut size={15} />, danger: true, onClick: () => { logout(); } },
+    ],
+  };
+
   return (
     <div
       className={[
@@ -26,7 +40,7 @@ export default function DashboardLayout({
         {isValidElement(header) ? (
           header
         ) : (
-          <Header {...(header as HeaderProps)} />
+          <Header {...defaultHeaderProps} {...(header as HeaderProps)} />
         )}
       </div>
 

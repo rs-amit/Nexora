@@ -10,7 +10,7 @@ import { Loader2 } from "lucide-react";
 
 type Variant = "default" | "primary";
 
-type MenuItem = {
+export type MenuItem = {
   label: string;
   onClick: () => void;
   icon?: React.ReactNode;

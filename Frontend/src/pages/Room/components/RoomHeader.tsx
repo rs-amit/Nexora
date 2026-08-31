@@ -9,6 +9,7 @@ import { CgMenuRight } from "react-icons/cg";
 import { FiLogOut } from "react-icons/fi";
 import { AiOutlineUser } from "react-icons/ai";
 import { Users } from "lucide-react";
+import { logout } from "../../../service/auth.service";
 
 export interface HeaderProps {
   roomName: string;
@@ -96,10 +97,10 @@ function Header({ roomName, loading = false, onManageMembers, onShareClick }: He
               onClick: () => { },
             },
             {
-              label: "Sign up",
+              label: "Logout",
               danger: true,
               icon:<FiLogOut size={16} />,
-              onClick: () => { },
+              onClick: () => { logout(); },
             },
 
           ]}

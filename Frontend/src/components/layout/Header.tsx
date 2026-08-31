@@ -1,6 +1,7 @@
 import type { MouseEventHandler, ReactNode } from 'react'
 import { Bell, ChevronRight, Search } from 'lucide-react'
 import logo from "../../assets/logo.png"
+import MenuDropdown, { type MenuItem } from '../ui/UserMenu'
 
 export interface HeaderLogo {
   name: string
@@ -27,6 +28,8 @@ export interface HeaderProps {
   onSearchClick?: MouseEventHandler<HTMLButtonElement>
   onNotificationsClick?: MouseEventHandler<HTMLButtonElement>
   onUserClick?: MouseEventHandler<HTMLButtonElement>
+  /** When provided, the avatar opens a dropdown with these items (e.g. Logout) instead of just firing onUserClick */
+  userMenuItems?: MenuItem[]
   /** Extra ReactNode(s) rendered before the icon cluster (e.g. a "Create" button) */
   actions?: ReactNode
   sticky?: boolean
@@ -62,6 +65,7 @@ export default function Header({
   onSearchClick,
   onNotificationsClick,
   onUserClick,
+  userMenuItems,
   actions,
   sticky = true,
   className = '',
@@ -141,18 +145,36 @@ export default function Header({
         </button>
 
         {user && (
-          <button
-            type="button"
-            onClick={onUserClick}
-            aria-label={user.name ? `Account: ${user.name}` : 'Account'}
-            className="ml-1 grid h-9 w-9 place-items-center overflow-hidden rounded-full bg-surface-raised text-sm font-medium text-gray-100 ring-1 ring-surface-border hover:ring-accent"
-          >
-            {user.imageUrl ? (
-              <img src={user.imageUrl} alt="" className="h-full w-full object-cover" />
-            ) : (
-              user.initials ?? user.name?.[0] ?? '?'
-            )}
-          </button>
+          userMenuItems && userMenuItems.length > 0 ? (
+            <MenuDropdown
+              items={userMenuItems}
+              trigger={
+                <div
+                  aria-label={user.name ? `Account: ${user.name}` : 'Account'}
+                  className="ml-1 grid h-9 w-9 place-items-center overflow-hidden rounded-full bg-surface-raised text-sm font-medium text-gray-100 ring-1 ring-surface-border hover:ring-accent"
+                >
+                  {user.imageUrl ? (
+                    <img src={user.imageUrl} alt="" className="h-full w-full object-cover" />
+                  ) : (
+                    user.initials ?? user.name?.[0] ?? '?'
+                  )}
+                </div>
+              }
+            />
+          ) : (
+            <button
+              type="button"
+              onClick={onUserClick}
+              aria-label={user.name ? `Account: ${user.name}` : 'Account'}
+              className="ml-1 grid h-9 w-9 place-items-center overflow-hidden rounded-full bg-surface-raised text-sm font-medium text-gray-100 ring-1 ring-surface-border hover:ring-accent"
+            >
+              {user.imageUrl ? (
+                <img src={user.imageUrl} alt="" className="h-full w-full object-cover" />
+              ) : (
+                user.initials ?? user.name?.[0] ?? '?'
+              )}
+            </button>
+          )
         )}
       </div>
     </header>

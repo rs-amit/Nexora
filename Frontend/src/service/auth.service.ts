@@ -17,6 +17,21 @@ export const signupApi = (data: SignupPayload) =>
 export const signinApi = (data: SigninPayload) =>
   api.post("/auth/login", data);
 
+// Always clears local session state and redirects, even if the network call
+// fails (e.g. the session was already expired) — logging out should never
+// leave the user stuck in a half-signed-in state.
+export const logout = async (): Promise<void> => {
+  try {
+    await api.post("/auth/logout");
+  } catch (error) {
+    console.error("Logout request failed:", error);
+  } finally {
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("user");
+    window.location.href = "/login";
+  }
+};
+
 export interface ValidatedUser {
   _id: string;
   name: string;
