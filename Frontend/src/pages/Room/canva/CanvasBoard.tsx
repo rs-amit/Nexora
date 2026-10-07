@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Loader2 } from "lucide-react";
 
 import Toolbar from "./Toolbar";
 import PresenceLayer from "./PresenceLayer";
@@ -71,6 +72,7 @@ function CanvasBoard({ members }: CanvasBoardProps) {
     updateLocalShape,
     deleteLocalShape,
     connected,
+    loadingSnapshot,
     zoom,
     pan,
     setViewportSize,
@@ -786,6 +788,17 @@ function CanvasBoard({ members }: CanvasBoardProps) {
 
       <div ref={containerRef} className="relative w-full h-full overflow-hidden">
         <div className="absolute inset-0" />
+
+        {/* Saved board is still loading — otherwise an empty canvas reads as
+            "nothing here yet". */}
+        {loadingSnapshot && (
+          <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center">
+            <div className="flex items-center gap-2 rounded-full border border-white/10 bg-[#111923]/90 px-4 py-2 text-[12px] text-white/70 shadow-xl">
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              Loading board…
+            </div>
+          </div>
+        )}
 
         <canvas
           ref={canvasRef}

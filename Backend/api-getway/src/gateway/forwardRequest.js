@@ -21,8 +21,7 @@ export const forwardRequest = (req, targetBase) => {
     delete headers.host;
 
     console.log("its working----2")
-
-    // Inject authenticated user info
+    
     if (req.user) {
 
       console.log("user",req.user )

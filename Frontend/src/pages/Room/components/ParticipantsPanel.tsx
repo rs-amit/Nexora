@@ -1,4 +1,5 @@
 import type { WorkspaceMemberInfo } from "../../../hooks/useWorkspaceMembers";
+import Skeleton from "../../../components/ui/Skeleton";
 
 export interface ParticipantsPanelProps {
   members: WorkspaceMemberInfo[];
@@ -55,11 +56,13 @@ function ParticipantsPanel({
           );
         })}
 
-        {members.length === 0 && (
-          <p className="px-2 py-2 text-[12px] text-white/30">
-            Loading members...
-          </p>
-        )}
+        {members.length === 0 &&
+          Array.from({ length: 4 }).map((_, index) => (
+            <div key={index} className="flex items-center gap-2 px-2 py-2">
+              <Skeleton className="h-2 w-2 shrink-0 rounded-full" />
+              <Skeleton className={`h-3 ${index % 2 === 0 ? "w-28" : "w-20"}`} />
+            </div>
+          ))}
       </div>
     </div>
   );

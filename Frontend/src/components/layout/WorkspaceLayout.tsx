@@ -10,8 +10,7 @@ function WorkspaceLayout() {
     const {
         data: workspaceList,
         refetch: refetchWorkspaces,
-        // loading,
-        // error
+        loading,
     } = useFetch<GetMyWorkspacesResponse>(workspaceService.getMyWorkspaces);
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
@@ -31,7 +30,7 @@ function WorkspaceLayout() {
     return (
         <>
             <div className="flex h-dvh w-full overflow-hidden">
-                <Sidebar data={workspaces} onWorkspaceCreated={() => setIsCreateModalOpen(!isCreateModalOpen)} />
+                <Sidebar data={workspaces} loading={loading} onWorkspaceCreated={() => setIsCreateModalOpen(!isCreateModalOpen)} />
 
                 <main className="flex-1 overflow-hidden">
                     <Outlet />

@@ -2,6 +2,7 @@
 import { useNavigate, useParams } from "react-router-dom";
 import logo from "../../assets/logo.png";
 import { VscNewFolder } from "react-icons/vsc";
+import Skeleton from "./Skeleton";
 // import { workspaceService } from "../../service/workspace.service";
 
 type Workspace = {
@@ -23,12 +24,14 @@ type WorkspaceMember = {
 
 type SidebarProps = {
   data: WorkspaceMember[];
+  loading?: boolean;
   onWorkspaceCreated: () => void;
 };
 
+// Varied widths so the placeholder list looks like real workspace names.
+const SKELETON_WIDTHS = ["w-40", "w-28", "w-36", "w-24", "w-32"];
 
-
-function Sidebar({ data, onWorkspaceCreated }: SidebarProps, ) {
+function Sidebar({ data, loading = false, onWorkspaceCreated }: SidebarProps, ) {
 
   const navigate = useNavigate();
   const { workspaceId: activeWorkspaceId } = useParams<{ workspaceId: string }>();
@@ -129,6 +132,12 @@ function Sidebar({ data, onWorkspaceCreated }: SidebarProps, ) {
 
         {/* Workspace List */}
         <div className="space-y-1">
+          {loading && data.length === 0 && Array.from({ length: 5 }).map((_, index) => (
+            <div key={index} className="flex items-center pl-3 pr-2 py-2 border border-transparent">
+              <Skeleton className={`h-4 ${SKELETON_WIDTHS[index % SKELETON_WIDTHS.length]}`} />
+            </div>
+          ))}
+
           {data?.map((workspace) => {
             const isActive = workspace.workspaceId._id === activeWorkspaceId;
 

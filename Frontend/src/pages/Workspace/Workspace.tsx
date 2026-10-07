@@ -12,6 +12,9 @@ import CreateRoomModal, {
     type CreateRoomPayload,
 } from "./component/CreateRoomModal";
 import RoomCard from "./component/RoomCard";
+import RoomCardSkeleton from "./component/RoomCardSkeleton";
+import WorkspaceSkeleton from "./component/WorkspaceSkeleton";
+import Skeleton from "../../components/ui/Skeleton";
 import MembersTab from "./component/MembersTab";
 import { useWorkspaceMembers } from "../../hooks/useWorkspaceMembers";
 import type { InviteMemberPayload } from "./component/InviteMemberModal";
@@ -26,7 +29,11 @@ function Workspace() {
     const navigate = useNavigate();
     const [activeTab, setActiveTab] = useState<Tab>("Overview");
     const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
-    const { members, refetch } = useWorkspaceMembers(workspaceId);
+    const {
+        members,
+        loading: membersLoading,
+        refetch,
+    } = useWorkspaceMembers(workspaceId);
         const [isInviteOpen, setIsInviteOpen] = useState(false);
 
     const fetchWorkspace = useCallback((): Promise<GetWorkspaceByIdResponse> => {
@@ -82,7 +89,7 @@ function Workspace() {
     };
 
     if (workspaceLoading) {
-        return <div className="p-8 text-white/60">Loading workspace...</div>;
+        return <WorkspaceSkeleton />;
     }
 
     if (workspaceError || !workspace) {
@@ -118,7 +125,11 @@ function Workspace() {
             )}
 
             {roomsLoading ? (
-                <p className="text-white/50">Loading rooms...</p>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                    {Array.from({ length: 4 }).map((_, index) => (
+                        <RoomCardSkeleton key={index} />
+                    ))}
+                </div>
             ) : (
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                     {rooms.map((room) => (
@@ -220,7 +231,11 @@ function Workspace() {
                                 <DoorOpen size={18} strokeWidth={1.8} />
                             </div>
                             <p className="mt-3 text-sm text-white/55">Rooms</p>
-                            <p className="text-2xl font-semibold">{rooms.length}</p>
+                            {roomsLoading ? (
+                                <Skeleton className="mt-1 h-7 w-12" />
+                            ) : (
+                                <p className="text-2xl font-semibold">{rooms.length}</p>
+                            )}
                             {workspace.stats.activeRoomCount > 0 && (
                                 <p className="mt-1 text-xs text-green-400">
                                     {workspace.stats.activeRoomCount} active now
@@ -247,7 +262,12 @@ function Workspace() {
             ) : activeTab === "Rooms" ? (
                 roomsSection
             ) : (
-                <MembersTab workspaceId={workspaceId as string} />
+                <MembersTab
+                    members={members}
+                    loading={membersLoading}
+                    isOwner={isOwner}
+                    onInviteClick={() => setIsInviteOpen(true)}
+                />
             )}
 
             <CreateRoomModal

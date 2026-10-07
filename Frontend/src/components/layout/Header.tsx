@@ -1,5 +1,9 @@
 import type { MouseEventHandler, ReactNode } from 'react'
-import { Bell, ChevronRight, Search } from 'lucide-react'
+import {
+  //  Bell,
+   ChevronRight,
+    // Search 
+  } from 'lucide-react'
 import logo from "../../assets/logo.png"
 import MenuDropdown, { type MenuItem } from '../ui/UserMenu'
 
@@ -36,34 +40,14 @@ export interface HeaderProps {
   className?: string
 }
 
-/**
- * Header
- * ------
- * Reusable top navigation bar for dashboard-style apps.
- *
- * It is intentionally "dumb": it renders whatever data you pass it and
- * calls the callbacks you give it. Drop it into any page — or into
- * <DashboardLayout /> — and configure it per-page via props instead of
- * duplicating markup.
- *
- * Usage:
- *   <Header
- *     logo={{ name: 'Nexora' }}
- *     breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Dashboard' }]}
- *     notificationCount={2}
- *     user={{ name: 'Alex Rivera', initials: 'A' }}
- *     onSearchClick={() => setSearchOpen(true)}
- *     onNotificationsClick={() => setNotifOpen(true)}
- *     onUserClick={() => setMenuOpen(true)}
- *   />
- */
+
 export default function Header({
 
   breadcrumbs = [],
-  notificationCount = 0,
+  // notificationCount = 0,
   user,
-  onSearchClick,
-  onNotificationsClick,
+  // onSearchClick,
+  // onNotificationsClick,
   onUserClick,
   userMenuItems,
   actions,
@@ -80,7 +64,6 @@ export default function Header({
         className,
       ].join(' ')}
     >
-      {/* Left: logo + breadcrumbs */}
       <div className="flex min-w-0 items-center gap-3">
 
         <div className='w-[100%] max-w-[45px]'>
@@ -123,7 +106,7 @@ export default function Header({
       <div className="flex shrink-0 items-center gap-2 sm:gap-3">
         {actions}
 
-        <button
+        {/* <button
           type="button"
           onClick={onSearchClick}
           aria-label="Search"
@@ -142,7 +125,7 @@ export default function Header({
           {notificationCount > 0 && (
             <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-accent ring-2 ring-surface-base" />
           )}
-        </button>
+        </button> */}
 
         {user && (
           userMenuItems && userMenuItems.length > 0 ? (

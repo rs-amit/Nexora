@@ -1,52 +1,41 @@
-import { useState } from "react";
-import { UserPlus } from "lucide-react";
 import Button from "../../../components/ui/Button/CustomButton";
-import { useWorkspaceMembers } from "../../../hooks/useWorkspaceMembers";
+import Skeleton from "../../../components/ui/Skeleton";
+import { UserPlus } from "lucide-react";
+import type { WorkspaceMemberInfo } from "../../../hooks/useWorkspaceMembers";
 import { getCurrentUser } from "../../../lib/currentUser";
-import { workspaceService } from "../../../service/workspace.service";
-import InviteMemberModal, {
-    type InviteMemberPayload,
-} from "./InviteMemberModal";
 
 export interface MembersTabProps {
-    workspaceId: string;
+    members: WorkspaceMemberInfo[];
+    loading: boolean;
+    isOwner: boolean;
+    onInviteClick: () => void;
 }
 
-function MembersTab({ workspaceId }: MembersTabProps) {
-    const { members, loading, refetch } = useWorkspaceMembers(workspaceId);
-    const [isInviteOpen, setIsInviteOpen] = useState(false);
-
+// Members come from the parent Workspace page, which already loads them —
+// avoids a second identical fetch when this tab opens.
+function MembersTab({ members, loading, isOwner, onInviteClick }: MembersTabProps) {
     const currentUser = getCurrentUser();
-    const currentMembership = members.find(
-        (member) => member.userId === currentUser?.id
-    );
-    const isOwner = currentMembership?.role === "OWNER";
-
-    const handleInvite = async (payload: InviteMemberPayload) => {
-        await workspaceService.inviteMember(workspaceId, payload);
-        await refetch();
-        setIsInviteOpen(false);
-    };
-
-    if (loading && members.length === 0) {
-        return <p className="mt-10 text-center text-white/40">Loading members...</p>;
-    }
+    const showSkeleton = loading && members.length === 0;
 
     return (
         <div className="mt-6">
             <div className="mb-4 flex items-center justify-between">
                 <div>
                     <h2 className="text-[16px] font-semibold">Members</h2>
-                    <p className="text-sm text-white/50">
-                        {members.length} {members.length === 1 ? "member" : "members"}
-                    </p>
+                    {showSkeleton ? (
+                        <Skeleton className="mt-1.5 h-3 w-20" />
+                    ) : (
+                        <p className="text-sm text-white/50">
+                            {members.length} {members.length === 1 ? "member" : "members"}
+                        </p>
+                    )}
                 </div>
 
                 {isOwner && (
                     <Button
                         type="button"
                         leftIcon={<UserPlus size={15} />}
-                        onClick={() => setIsInviteOpen(true)}
+                        onClick={onInviteClick}
                         className="!text-[12px]"
                     >
                         Invite Member
@@ -55,7 +44,21 @@ function MembersTab({ workspaceId }: MembersTabProps) {
             </div>
 
             <div className="divide-y divide-white/5 rounded-xl border border-white/10">
-                {members.map((member) => (
+                {showSkeleton && Array.from({ length: 5 }).map((_, index) => (
+                    <div
+                        key={index}
+                        className="flex items-center justify-between px-4 py-3"
+                    >
+                        <div className="min-w-0 space-y-1.5">
+                            <Skeleton className="h-3.5 w-32" />
+                            <Skeleton className="h-3 w-40" />
+                        </div>
+
+                        <Skeleton className="h-5 w-14 shrink-0 rounded-full" />
+                    </div>
+                ))}
+
+                {!showSkeleton && members.map((member) => (
                     <div
                         key={member.userId}
                         className="flex items-center justify-between px-4 py-3"
@@ -81,13 +84,6 @@ function MembersTab({ workspaceId }: MembersTabProps) {
                     </div>
                 ))}
             </div>
-
-            <InviteMemberModal
-                isOpen={isInviteOpen}
-                onClose={() => setIsInviteOpen(false)}
-                onInvite={handleInvite}
-                existingMemberIds={members.map((member) => member.userId)}
-            />
         </div>
     );
 }

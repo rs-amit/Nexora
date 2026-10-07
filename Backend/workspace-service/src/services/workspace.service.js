@@ -131,7 +131,6 @@ export const getMyWorkspaces = async (userId) => {
     })
     .lean();
 
-    console.log("memberships", memberships )
   const workspaceIds = memberships.map(
     (membership) => membership.workspaceId._id
   );
@@ -235,3 +234,4 @@ export const inviteMember = async (workspaceId, requesterId, { email, role }) =>
     email: invitedUser.email,
   };
 };
+

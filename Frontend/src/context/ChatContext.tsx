@@ -8,9 +8,11 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { toast } from "sonner";
 import { getSocket, disconnectSocket } from "../socket/socket";
 import { chatService } from "../service/chat.service";
 import { getCurrentUser } from "../lib/currentUser";
+import { getErrorMessage } from "../lib/errorMessage";
 import type { ChatMessage, ChatScope } from "../types/chat.types";
 
 export type PopupKey = string;
@@ -138,7 +140,7 @@ export function ChatProvider({
       .then((response) => {
         setMessagesByKey((prev) => ({ ...prev, [GROUP_KEY]: response.data }));
       })
-      .catch((error) => console.error(error));
+      .catch((error) => toast.error(getErrorMessage(error, "Failed to load chat messages.")));
   }, [roomId]);
 
   const openDm = useCallback(
@@ -150,7 +152,7 @@ export function ChatProvider({
         { roomId, otherUserId },
         (ack: AckResponse) => {
           if (!ack.ok) {
-            console.error(ack.error);
+            toast.error(ack.error || "Failed to open direct message.");
             return;
           }
 
@@ -174,7 +176,7 @@ export function ChatProvider({
             .then((response) => {
               setMessagesByKey((prev) => ({ ...prev, [key]: response.data }));
             })
-            .catch((error) => console.error(error));
+            .catch((error) => toast.error(getErrorMessage(error, "Failed to load chat messages.")));
         }
       );
     },

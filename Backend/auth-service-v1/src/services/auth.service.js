@@ -163,8 +163,6 @@ export const searchUsersService = async ({ query, excludeUserId }) => {
 export const validateUsersService = async ({ userIds }) => {
 
 
-  console.log("reached----------------->")
-
   if (!Array.isArray(userIds) || userIds.length === 0) {
     throw new Error("userIds must be a non-empty array")
   }

@@ -111,14 +111,14 @@ function MenuDropdown({
   > = {
     default: `
       text-white/90
-      // hover:bg-[#3a3a3a]
+      bg-[#171717]
       h-[27px]
     `,
 
     primary: `
-      // bg-[#00a8e6]
       h-[32px]
       text-white
+      bg-[#171717]
       hover:bg-[#0096cc]
       
     `,
@@ -174,7 +174,6 @@ function MenuDropdown({
 
             disabled:opacity-50
             disabled:cursor-not-allowed
-
             ${triggerVariants[variant]}
 
             ${
@@ -304,18 +303,11 @@ function MenuDropdown({
                   }}
                   className={`
                     w-full
-
                     flex items-center gap-3
-
                     px-4 py-3
-
                     text-left
                     text-sm
-
                     transition-all duration-150
-
-                    hover:bg-white/5
-
                     disabled:opacity-40
                     disabled:cursor-not-allowed
 
@@ -324,7 +316,7 @@ function MenuDropdown({
                         ? `
                           bg-[#171717]
                           text-red-500
-                          hover:bg-red-500/10
+                          hover:bg-[#171710]
                         `
                         : "text-white/85"
                     }

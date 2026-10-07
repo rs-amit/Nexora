@@ -6,6 +6,24 @@ const api = axios.create({
 })
 
 /*
+Render free-tier services sleep after inactivity and rate-limit requests
+made while they're waking back up (429 "hibernate-rate-limited"). Retry
+those with backoff instead of surfacing a hard failure.
+*/
+
+const WAKE_RETRY_DELAYS_MS = [3000, 5000]
+
+const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
+
+/*
+Fires a "retry" event each time a request is retried after a 429, so UI
+code (e.g. the login form) can show a "server is waking up" message
+without every caller having to plumb a callback through.
+*/
+
+export const wakeEvents = new EventTarget()
+
+/*
 Attach access token
 */
 
@@ -31,6 +49,26 @@ api.interceptors.response.use(
   async (error) => {
 
     const originalRequest = error.config
+
+    if (error.response?.status === 429) {
+
+      originalRequest._wakeRetryCount =
+        originalRequest._wakeRetryCount || 0
+
+      if (originalRequest._wakeRetryCount < WAKE_RETRY_DELAYS_MS.length) {
+
+        const delay =
+          WAKE_RETRY_DELAYS_MS[originalRequest._wakeRetryCount]
+
+        originalRequest._wakeRetryCount += 1
+
+        wakeEvents.dispatchEvent(new Event("retry"))
+
+        await wait(delay)
+
+        return api(originalRequest)
+      }
+    }
 
     if (
       error.response?.status === 401 &&

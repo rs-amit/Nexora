@@ -1,26 +1,6 @@
 import { Bell, ChevronRight, Search } from 'lucide-react'
 
-/**
- * Header
- * ------
- * Reusable top navigation bar for dashboard-style apps.
- *
- * It is intentionally "dumb": it renders whatever data you pass it and
- * calls the callbacks you give it. Drop it into any page — or into
- * <DashboardLayout /> — and configure it per-page via props instead of
- * duplicating markup.
- *
- * Usage:
- *   <Header
- *     logo={{ name: 'Nexora', icon: <LogoMark /> }}
- *     breadcrumbs={[{ label: 'Home', href: '/' }, { label: 'Dashboard' }]}
- *     notificationCount={2}
- *     user={{ name: 'Alex Rivera', initials: 'A' }}
- *     onSearchClick={() => setSearchOpen(true)}
- *     onNotificationsClick={() => setNotifOpen(true)}
- *     onUserClick={() => setMenuOpen(true)}
- *   />
- */
+
 export default function Header({
   logo = { name: 'App' },
   breadcrumbs = [],

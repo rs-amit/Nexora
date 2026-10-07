@@ -1,7 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 import { getSketchSocket, disconnectSketchSocket } from "../socket/sketchSocket";
 import { boardService } from "./board.service";
+import { getErrorMessage } from "../lib/errorMessage";
 import type {
   AckResponse,
   LaserPoint,
@@ -125,7 +127,7 @@ export function useCollaboration(
       if (cancelled) return;
 
       if (!ack?.ok) {
-        console.error("Failed to join board:", ack?.error);
+        toast.error(ack?.error || "Failed to join the board. Real-time updates may not work.");
       }
 
       setConnected(!!ack?.ok);
@@ -139,7 +141,7 @@ export function useCollaboration(
         if (cancelled) return;
         handlersRef.current.onSnapshotLoaded(response.data.map(dtoToShape));
       })
-      .catch((error) => console.error(error))
+      .catch((error) => toast.error(getErrorMessage(error, "Failed to load the board.")))
       .finally(() => {
         if (cancelled) return;
 

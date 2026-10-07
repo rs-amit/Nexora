@@ -10,8 +10,11 @@ import CreateWorkspaceModal, {
 import { workspaceService } from "../../service/workspace.service";
 import { Box, Boxes, BriefcaseBusiness, Flame } from "lucide-react";
 import WorkspaceCard from "./component/WorkspaceCard";
+import WorkspaceCardSkeleton from "./component/WorkspaceCardSkeleton";
 import type { GetMyWorkspacesResponse } from "../../types/workspace.types";
 // import Sidebar from "./component/Sidebar";
+
+const WORKSPACE_GRID_CLASS = "grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-4";
 
 const WORKSPACE_STYLES = [
   { icon: <Box size={22} strokeWidth={1.8} />, className: "bg-cyan-500/15 text-cyan-400" },
@@ -74,72 +77,89 @@ function Dashboard() {
             </Button>
           </div>
         </div>
-        {
-          workspaces.length > 0 && (
-            <div className="w-full">
-              {/* Section Header */}
-              <div className="mb-4 flex items-center justify-between">
-                <h2 className="text-[16px] font-semibold text-white">
-                  Your Workspaces
-                </h2>
+        <div className="w-full">
+          {/* Section Header */}
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="text-[16px] font-semibold text-white">
+              Your Workspaces
+            </h2>
 
-                {workspaces.length > 4 && (
-                  <button
-                    type="button"
-                    className="
-                    flex
-                    items-center
-                    gap-2
-                    text-[12px]
-                    text-blue-400
-                    transition
-                    hover:text-blue-300
-                    "
-                    onClick={() =>
-                      handleWorkspaceClick(workspaces[0].workspaceId._id)
-                    }
-                  >
-                    View all
-                    <span>→</span>
-                  </button>
-                )}
-              </div>
-
-              {error && (
-                <p className="mb-4 text-[12px] text-red-400">{error}</p>
-              )}
-
-
-              <div
+            {workspaces.length > 4 && (
+              <button
+                type="button"
                 className="
-          grid
-          grid-cols-1
-          gap-5
-          sm:grid-cols-2
-          xl:grid-cols-4
-         "
+                flex
+                items-center
+                gap-2
+                text-[12px]
+                text-blue-400
+                transition
+                hover:text-blue-300
+                "
+                onClick={() =>
+                  handleWorkspaceClick(workspaces[0].workspaceId._id)
+                }
               >
-                {workspaces.slice(0, 4).map((workspace: any, index: number) => {
-                  const style = WORKSPACE_STYLES[index % WORKSPACE_STYLES.length];
+                View all
+                <span>→</span>
+              </button>
+            )}
+          </div>
 
-                  return (
-                    <WorkspaceCard
-                      key={workspace._id}
-                      title={workspace.workspaceId.name}
-                      description={workspace.workspaceId.description}
-                      icon={style.icon}
-                      iconClassName={style.className}
-                      totalMembers={workspace.workspaceId.members.length}
-                      onClick={() =>
-                        handleWorkspaceClick(workspace.workspaceId._id)
-                      }
-                    />
-                  );
-                })}
-              </div>
+          {error && (
+            <p className="mb-4 text-[12px] text-red-400">{error}</p>
+          )}
+
+          {loading ? (
+            <div className={WORKSPACE_GRID_CLASS}>
+              {Array.from({ length: 4 }).map((_, index) => (
+                <WorkspaceCardSkeleton key={index} />
+              ))}
             </div>
-          )
-        }
+          ) : workspaces.length === 0 ? (
+            !error && (
+              <div className="flex flex-col items-center justify-center gap-3 rounded-xl border border-dashed py-14 text-center">
+                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-cyan-500/15 text-cyan-400">
+                  <Boxes size={22} strokeWidth={1.8} />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-white">No workspaces yet</p>
+                  <p className="mt-1 text-[12px] text-white/50">
+                    Create a workspace to start organizing your rooms.
+                  </p>
+                </div>
+                <Button
+                  type="button"
+                  size="sm"
+                  leftIcon={<BiAddToQueue />}
+                  onClick={() => setIsCreateModalOpen(true)}
+                >
+                  Create Workspace
+                </Button>
+              </div>
+            )
+          ) : (
+            <div className={WORKSPACE_GRID_CLASS}>
+              {workspaces.slice(0, 4).map((workspace: any, index: number) => {
+                const style = WORKSPACE_STYLES[index % WORKSPACE_STYLES.length];
+
+                return (
+                  <WorkspaceCard
+                    key={workspace._id}
+                    title={workspace.workspaceId.name}
+                    description={workspace.workspaceId.description}
+                    icon={style.icon}
+                    iconClassName={style.className}
+                    totalMembers={workspace.workspaceId.members.length}
+                    onClick={() =>
+                      handleWorkspaceClick(workspace.workspaceId._id)
+                    }
+                  />
+                );
+              })}
+            </div>
+          )}
+        </div>
 
       </div>
 

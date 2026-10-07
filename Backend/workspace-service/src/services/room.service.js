@@ -72,7 +72,7 @@ export const getRoomsByWorkspace = async (workspaceId, userId) => {
 
   const rooms = await Room.find({ workspaceId })
     .sort({ createdAt: -1 })
-    .lean();
+    .lean();// return plain JS objects instead of full Mongoose documents
 
   const restrictedRoomIds = rooms
     .filter((room) => room.visibility === "RESTRICTED")

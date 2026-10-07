@@ -1,9 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "../../components/ui/CustomInput";
 import Button from "../../components/ui/Button/CustomButton";
 import { signinApi } from "../../service/auth.service";
+import { wakeEvents } from "../../lib/api";
 
 const Login = () => {
     const navigate = useNavigate();
@@ -18,6 +19,14 @@ const Login = () => {
     );
 
     const [loading, setLoading] = useState(false);
+    const [waking, setWaking] = useState(false);
+    const [formError, setFormError] = useState("");
+
+    useEffect(() => {
+        const handleRetry = () => setWaking(true);
+        wakeEvents.addEventListener("retry", handleRetry);
+        return () => wakeEvents.removeEventListener("retry", handleRetry);
+    }, []);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setForm({ ...form, [e.target.name]: e.target.value });
@@ -39,6 +48,8 @@ const Login = () => {
 
         try {
             setLoading(true);
+            setFormError("");
+            setWaking(false);
 
             const res = await signinApi(form);
 
@@ -48,8 +59,14 @@ const Login = () => {
             navigate("/join-room");
         } catch (err: any) {
             console.error(err.response?.data?.message || err.message);
+            setFormError(
+                err.response?.status === 429
+                    ? "The server is still waking up. Please try again in a few seconds."
+                    : err.response?.data?.message || "Something went wrong. Please try again."
+            );
         } finally {
             setLoading(false);
+            setWaking(false);
         }
     };
 
@@ -80,6 +97,16 @@ const Login = () => {
                     onChange={handleChange}
                     error={errors.password}
                 />
+
+                {formError && (
+                    <p className="text-xs text-red-500">{formError}</p>
+                )}
+
+                {waking && (
+                    <p className="text-xs text-gray-500">
+                        Server was asleep, waking it up now — this can take a few seconds…
+                    </p>
+                )}
 
                 {/* Button */}
 

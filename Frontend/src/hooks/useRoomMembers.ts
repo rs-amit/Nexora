@@ -1,7 +1,10 @@
-import { useCallback, useEffect, useState } from "react";
+/* eslint-disable react-hooks/set-state-in-effect */
+import { useCallback, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 import { roomService } from "../service/room.service";
 import { validateUsers } from "../service/auth.service";
 import type { RoomVisibility } from "../types/room.types";
+import { getErrorMessage } from "../lib/errorMessage";
 
 export interface RoomMemberInfo {
   userId: string;
@@ -14,14 +17,22 @@ export function useRoomMembers(roomId: string | undefined) {
   const [members, setMembers] = useState<RoomMemberInfo[]>([]);
   const [visibility, setVisibility] = useState<RoomVisibility>("OPEN");
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
+  // Only the latest request may write state.
+  const requestIdRef = useRef(0);
+
+  // Background refresh: keeps the current list on screen while reloading
+  // (e.g. after adding/removing a member).
   const load = useCallback(async () => {
     if (!roomId) return;
 
-    setLoading(true);
+    const requestId = ++requestIdRef.current;
+    setError(null);
 
     try {
       const response = await roomService.getRoomMembers(roomId);
+      if (requestId !== requestIdRef.current) return;
 
       const entries = response.data.members;
       setVisibility(response.data.visibility);
@@ -34,6 +45,7 @@ export function useRoomMembers(roomId: string | undefined) {
       const { users } = await validateUsers(
         entries.map((entry) => entry.userId)
       );
+      if (requestId !== requestIdRef.current) return;
 
       const userById = new Map(users.map((user) => [user._id, user]));
 
@@ -49,14 +61,23 @@ export function useRoomMembers(roomId: string | undefined) {
       });
 
       setMembers(merged);
+    } catch (err) {
+      if (requestId !== requestIdRef.current) return;
+      const message = getErrorMessage(err, "Failed to load room members.");
+      setError(message);
+      toast.error(message);
     } finally {
-      setLoading(false);
+      if (requestId === requestIdRef.current) setLoading(false);
     }
   }, [roomId]);
 
+  // Different room — clear the old list so the skeleton shows.
   useEffect(() => {
+    if (!roomId) return;
+    setMembers([]);
+    setLoading(true);
     load();
-  }, [load]);
+  }, [roomId, load]);
 
   const addMember = async (userId: string) => {
     if (!roomId) return;
@@ -70,5 +91,5 @@ export function useRoomMembers(roomId: string | undefined) {
     await load();
   };
 
-  return { members, visibility, loading, addMember, removeMember, refetch: load };
+  return { members, visibility, loading, error, addMember, removeMember, refetch: load };
 }

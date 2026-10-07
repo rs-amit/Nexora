@@ -1,9 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import Input from "../../components/ui/CustomInput";
 import Button from "../../components/ui/Button/CustomButton";
 import { signupApi } from "../../service/auth.service";
+import { getErrorMessage } from "../../lib/errorMessage";
 
 function Register() {
 
@@ -55,8 +56,8 @@ function Register() {
 
             // ✅ redirect
             navigate("/join-room");
-        } catch (err: any) {
-            console.error(err.response?.data?.message || err.message);
+        } catch (err) {
+            toast.error(getErrorMessage(err, "Failed to create account. Please try again."));
         } finally {
             setLoading(false);
         }

@@ -1,21 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react'
+import { toast } from 'sonner'
 import Input from '../../components/ui/CustomInput'
 import slider_image_1 from "../../assets/gate_image_1.png"
 import slider_image_2 from "../../assets/gate_image_2.png"
 import slider_image_3 from "../../assets/gate_image_3.png"
 import HeroSlider from '../../components/ui/ImageSlider'
 import { useNavigate } from "react-router-dom";
-import { createRoom } from '../../service/room.service'
+import { createRoom, roomService } from '../../service/room.service'
 // import { FiCopy, FiEdit2, FiMoreVertical, FiPlus, FiTrash2 } from 'react-icons/fi'
 import MenuDropdown from '../../components/ui/UserMenu'
 import { Copy } from 'lucide-react'
 import { FiPlus } from 'react-icons/fi'
+import { getErrorMessage } from '../../lib/errorMessage'
 
 
 function Gate() {
     const [joinCode, setJoinCode] = useState("")
     const [loading, setLoading] = useState(false);
+    const [joining, setJoining] = useState(false);
     const navigate = useNavigate();
 
     const slides: any = [
@@ -45,16 +48,36 @@ function Gate() {
 
             const response = await createRoom();
 
-            console.log(response);
-
-            console.log("its working...")
-
             navigate(`/room/${response.data.roomId}`);
 
         } catch (error) {
-            console.error("Room creation failed:", error);
+            toast.error(getErrorMessage(error, "Failed to start the meeting. Please try again."));
         } finally {
             setLoading(false);
+        }
+    };
+
+    const joinRoomHandler = async () => {
+        const trimmed = joinCode.trim();
+
+        if (!trimmed) {
+            toast.error("Enter a room code or link to join.");
+            return;
+        }
+
+        const roomId = trimmed.split(/[/?#]/).filter(Boolean).pop() ?? trimmed;
+
+        try {
+            setJoining(true);
+
+            await roomService.getRoomById(roomId);
+
+            navigate(`/room/${roomId}`);
+
+        } catch (error) {
+            toast.error(getErrorMessage(error, "Room not found. Check the code and try again."));
+        } finally {
+            setJoining(false);
         }
     };
 
@@ -80,9 +103,17 @@ function Gate() {
                             value={joinCode}
                             onChange={(e) => setJoinCode(e.target.value)}
                             className='w-fill'
+                            disabled={joining}
                         />
                         <span className='border border-[#bfc0c5] h-[30px]'></span>
-                        <button className=''>Join</button>
+                        <button
+                            type="button"
+                            className='disabled:opacity-50 disabled:cursor-not-allowed'
+                            disabled={joining}
+                            onClick={joinRoomHandler}
+                        >
+                            {joining ? "Joining..." : "Join"}
+                        </button>
                     </div>
                     <div>
 

@@ -3,13 +3,14 @@ import { Link } from "react-router-dom";
 import logo from "../../../assets/logo.png";
 
 import Input from "../../../components/ui/CustomInput";
+import Skeleton from "../../../components/ui/Skeleton";
 // import DropdownButton from "../../../components/ui/DropdownButton";
 
 import ShareButton from "../../../components/ui/Button/ShareButton";
 import MenuDropdown from "../../../components/ui/UserMenu";
 import { CgMenuRight } from "react-icons/cg";
 import { FiLogOut } from "react-icons/fi";
-import { AiOutlineUser } from "react-icons/ai";
+// import { AiOutlineUser } from "react-icons/ai";
 import { Users } from "lucide-react";
 import { logout } from "../../../service/auth.service";
 
@@ -50,16 +51,19 @@ function Header({ roomName, loading = false, onManageMembers, onShareClick }: He
         <span className="text-[22px]">/</span>
 
         <div className="w-[130px] w-fit">
-          <Input
-            name="name"
-            placeholder="Room Name"
-            value={loading ? "Loading..." : roomName}
-            disabled={loading}
-            onChange={(e) =>
-              console.log(e.target.value)
-            }
-            variant="inline"
-          />
+          {loading ? (
+            <Skeleton className="h-4 w-32" />
+          ) : (
+            <Input
+              name="name"
+              placeholder="Room Name"
+              value={roomName}
+              onChange={(e) =>
+                console.log(e.target.value)
+              }
+              variant="inline"
+            />
+          )}
         </div>
 
       </div>
@@ -93,11 +97,11 @@ function Header({ roomName, loading = false, onManageMembers, onShareClick }: He
           triggerIcon={<CgMenuRight size={16} />}
           iconPosition="right"
           items={[
-            {
-              label: "Profile",
-              icon: <AiOutlineUser size={16}/>,
-              onClick: () => { },
-            },
+            // {
+            //   label: "Profile",
+            //   icon: <AiOutlineUser size={16}/>,
+            //   onClick: () => { },
+            // },
             {
               label: "Logout",
               danger: true,
